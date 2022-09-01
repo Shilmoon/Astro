@@ -1,11 +1,8 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
-import selenium
 from selenium import webdriver
 import time
 import json
-import requests
 from data import zatmeniya
 import JestcoNavalilZadach as SOLUTIONS
 
@@ -31,6 +28,9 @@ objectc_velich = {"Вега": "0,0ᵐ", "Венера в максимуме яр
                   "Предел для современных телескопов": "+34ᵐ", "Плутон в максимуме яркости": "+13,6ᵐ",
                   "Предел для невооружённого глаза": "+6ᵐ", "Сириус": "–1,4ᵐ", "Луна в полнолуние": "–12,8ᵐ",
                   "Полярная": "+2,0ᵐ", "Солнце": "–26,7ᵐ", "Марс в максимуме яркости": "–2,9ᵐ"}
+objectc_razmer = {"Меркурий": "5 тыс. км", "Титан (спутник Сатурна)": "5 тыс. км", "Уран": "50 тыс. км", "Сатурн": "116 тыс. км", "Комета Галлея": "11 км", }
+objectc_rast = {"Нептун": "30 а.е.", "Ближайшая звезда (альфа Центавра C)": "270 тыс. а.е.", "Пояс Койпера": "50 а.е.", "Венера": "0,7 а.е.", "Уран": "19,2 а.е."}
+objectc_napravl ={""}
 
 # proxy = input('Введите прокси')
 # port = input('Введите порт прокси')
