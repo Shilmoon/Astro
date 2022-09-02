@@ -18,7 +18,7 @@ ANAL = re.compile(r'\d+[.,/]?\d*')
 
 
 def ErrorD(A1):
-    return A1 + A1 * ((randint(0, 10) - 5) / 100)
+    return A1 + A1 * ((randint(0, 20) - 10) / 1000)
 
 
 def WII():
@@ -102,8 +102,10 @@ def Q13(A1, A2):
 
 
 # Годичный параллакс далёкой звезды равен
-def Q14(A1, A2):
-    return A1 * 0.001
+def Q14(A1, A2, A3):
+    S = {" секнд": "* 0.001", "исекунд": ""}
+    print(A2)
+    return eval(str(A2) + S[A1])
 
 
 # Сколько звёзд
@@ -160,6 +162,6 @@ def main(D1, s):
     A = list(map(lambda x: ".".join(re.split(r',', x)), ANAL.findall("".join(re.split(r'\s', s))))) + ["1", "1", "1"]
     if D1 in (Q18, Q15, Q11, Q10):
         return round(ErrorD(D1(eval(A[0]), eval(A[1]), eval(A[2]), eval(A[3]))), 1)
-    if D1 in (Q7, Q9):
-        return round(ErrorD(D1(re.search(r'южный\sт|северный\sт|южный\sп|северный\sп|макс|мини', s).group(0), A[0], A[1])), 1)
+    if D1 in (Q7, Q9, Q14):
+        return round(ErrorD(D1(re.search(r'южный\sт|северный\sт|южный\sп|северный\sп|макс|мини|.секунд', s).group(0), A[0], A[1])), 1)
     return round(ErrorD(D1(eval(A[0]), eval(A[1]))), 2)
