@@ -5,6 +5,8 @@ import time
 import json
 from data import zatmeniya
 import JestcoNavalilZadach as SOLUTIONS
+from selenium.webdriver.common.action_chains import ActionChains
+from data import galaktiki
 
 with open("data.json", "r") as read_file:
     data = json.load(read_file)
@@ -27,11 +29,29 @@ polushar_sozv = {'Стрелец': "Южное полушарие", 'Овен': 
 objectc_velich = {"Вега": "0,0ᵐ", "Венера в максимуме яркости": "–4,5ᵐ", "Уран в максимуме яркости": "+5,3ᵐ",
                   "Предел для современных телескопов": "+34ᵐ", "Плутон в максимуме яркости": "+13,6ᵐ",
                   "Предел для невооружённого глаза": "+6ᵐ", "Сириус": "–1,4ᵐ", "Луна в полнолуние": "–12,8ᵐ",
-                  "Полярная": "+2,0ᵐ", "Солнце": "–26,7ᵐ", "Марс в максимуме яркости": "–2,9ᵐ"}
-objectc_razmer = {"Меркурий": "5 тыс. км", "Титан (спутник Сатурна)": "5 тыс. км", "Уран": "50 тыс. км", "Сатурн": "116 тыс. км", "Комета Галлея": "11 км", }
-objectc_rast = {"Нептун": "30 а.е.", "Ближайшая звезда (альфа Центавра C)": "270 тыс. а.е.", "Пояс Койпера": "50 а.е.", "Венера": "0,7 а.е.", "Уран": "19,2 а.е."}
-objectc_napravl ={""}
-
+                  "Полярная": "+2,0ᵐ", "Солнце": "–26,7ᵐ", "Марс в максимуме яркости": "–2,9ᵐ", }
+objectc_razmer = {"Меркурий": "5 тыс. км", "Титан (спутник Сатурна)": "5 тыс. км", "Уран": "50 тыс. км",
+                  "Сатурн": "116 тыс. км", "Комета Галлея": "11 км", "Земля": "12,7 тыс. км", "Венера": "12,1 тыс. км",
+                  "Марс": "6,8 тыс. км", "Луна": "3,5 тыс. км", "Юпитер": "140 тыс. км",
+                  "Ганимед (спутник Юпитера)": "5 тыс. км", "Солнце": "1,4 млн км", "Нептун": "50 тыс. км",
+                  "Плутон": "2,4 тыс. км"}
+objectc_rast = {"Нептун": "30 а.е.", "Ближайшая звезда (альфа Центавра C)": "270 тыс. а.е.", "Пояс Койпера": "50 а.е.",
+                "Венера": "0,7 а.е.", "Уран": "19,2 а.е.", "Земля": "1 а.е.", "Сатурн": "9,5 а.е.",
+                "Главный пояс астероидов": "3 а.е.", "Юпитер": "5,2 а.е.", "Плутон": "39 а.е.", "Марс": "1,4 а.е.",
+                "Меркурий": "0,4 а.е.", "Аппарат «Вояджер-1»": "150 а.е."}
+objectc_napravl = {"Луна вокруг Земли": "Против часовой стрелки", "Солнце вокруг своей оси": "Против часовой стрелки",
+                   "Меркурий вокруг Солнца": "Против часовой стрелки",
+                   "Большинство астероидов": "Против часовой стрелки", "Сатурн вокруг Солнца": "Против часовой стрелки",
+                   "Венера вокруг Солнца": "Против часовой стрелки", "Земля вокруг Солнца": "Против часовой стрелки",
+                   "Уран вокруг Солнца": "Против часовой стрелки"}
+spectr_zv = {"бело-голубой": "B", "красный": "M", "белый": "A", "жёлтый": "G", "голубой": "O", "бело-жёлтый": "F",
+             "оранжевый": "K"}
+temp_zv = {"6200": 'F', "8000": 'A', "3000": 'M', "20000": 'B', "3700": 'K'}
+tip_gal = {"неправильные": 'I', "спиральные с перемычкой": 'SB', "линзовидные": 'S0', "эллиптические": 'E',
+           "сферические": 'E0', "спиральные без перемычки": 'S'}
+rad_zv = ("красный карлик", "жёлтая звезда главной последовательности", "голубой гигант", "красный сверхгигант",
+          "оранжевый гипергигант")
+spectr_c = ['O', "B", 'A', 'F', 'G', 'K', 'M']
 # proxy = input('Введите прокси')
 # port = input('Введите порт прокси')
 # proxy_login = input('Введите логин прокси')
@@ -51,7 +71,7 @@ objectc_napravl ={""}
 # driver = webdriver.Chrome('/home/jhon/PycharmProjects/Astro/chromedriver',seleniumwire_options=options)
 driver = webdriver.Chrome('/home/jhon/PycharmProjects/Astro/chromedriver')
 driver.get('https://astroschools.ru/moodle/login/index.php')
-login = 'pamiva9792@rxcay.com'
+login = 'lefid45553@seinfaq.com'
 password = 'Bhbyjxrf14@'
 driver.find_element(By.XPATH, '//*[@id="username"]').send_keys(login)
 driver.find_element(By.XPATH, '//*[@id="password"]').send_keys(password)
@@ -105,6 +125,40 @@ def photooick_tasks(dictation, i):
             break
 
 
+def multichoice(dictation, i):
+    pht_name = driver.find_element(By.XPATH,
+                                   f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[1]/p/img').get_attribute(
+        'src')
+    pht_name = pht_name[pht_name.rfind('/') + 1:]
+    elem_len = len(driver.find_element(By.XPATH,f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div[2]').find_elements(By.TAG_NAME,'div'))
+    ass = 0
+    for d in range(1, elem_len + 1):
+        ass += 1
+        s = driver.find_element(By.XPATH,
+                                f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div[2]/div[{d}]/label').text
+        if dictation.get(pht_name) == s:
+            driver.find_element(By.XPATH,
+                                f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div[2]/div[{d}]/input').click()
+            break
+        else:
+            if ass == 4:
+                print(f'Вопрос номер {i}')
+                print(pht_name)
+                print(s)
+
+
+def draganddrop(lists, i):
+    items = driver.find_element(By.XPATH,
+                                f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div/ul').find_elements(
+        By.CLASS_NAME, 'sortableitem')
+    for s in items:
+        action = ActionChains(driver)
+        source = s
+        dest = driver.find_element(By.XPATH,
+                                   f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div/ul/li[{lists.index(s.text) + 1}]')
+        action.drag_and_drop(source, dest).perform()
+
+
 def selectask(dictation, i):
     d = driver.find_element(By.XPATH, f'//*[@id="q{i}"]/div[2]/div/div[2]/table/tbody').find_elements(By.TAG_NAME, 'tr')
     print((d))
@@ -123,20 +177,21 @@ def gapselect(i):
     text = driver.find_element(By.XPATH,
                                f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[1]/p').text
     text = text[:text.find('\n')]
-    print(text)
     d = driver.find_element(By.XPATH,
                             f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[1]/p').find_elements(
         By.TAG_NAME,
         'span')
     first = 1
     len_d = len(d)
-    print(len(d))
-    if len_d == 5:
+    try:
+        if driver.find_element(By.XPATH, f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div['
+                                     f'1]/p/span[{1}]/select').text == '':
+            first = 2
+    except Exception:
         first = 2
     for num in range(first, len(d) + 1):
         select_object = Select(driver.find_element(By.XPATH,
                                                    f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[1]/p/span[{num}]/select'))
-        print(data.get(text))
         if first == 2:
             select_object.select_by_visible_text(data.get(text)[num - 2])
         else:
@@ -188,28 +243,47 @@ def solutions(url):
             selectask(polushar_sozv, q)
         elif 'Определите тип затмения' in s.text:
             photooick_tasks(zatmeniya, q)
-        elif 'Сопоставьте объекты' in s.text:
+        elif 'Сопоставьте объекты (или понятия) и соответствующие им звёздные величины.' in s.text:
             selectask(objectc_velich, q)
         elif clas == 'que calculatedsimple adaptivenopenalty notyetanswered' or clas == 'que calculated ' \
                                                                                         'adaptivenopenalty ' \
-                                                                                        'notyetanswered' or clas == 'que calculatedsimple deferredfeedback notyetanswered' or clas == 'que calculated deferredfeedback notanswered':
+                                                                                        'notyetanswered' or clas == 'que calculatedsimple deferredfeedback notyetanswered' or clas == 'que calculated deferredfeedback notanswered' or clas == 'que calculated deferredfeedback notyetanswered':
             try:
                 text = ""
-                for d in driver.find_element(By.XPATH,'/html/body/div[3]/div/div/div/section/div/form/div/div[3]/div['
-                                                      '2]/div/div[1]').find_elements(By.TAG_NAME, 'p'):
-                    text += driver.find_element(By.XPATH,f'/html/body/div[3]/div/div/div/section/div/form/div/div['
-                                                         f'3]/div[2]/div/div[1]/p[{d}]').text
+                for d in driver.find_element(By.XPATH, f'/html/body/div[3]/div/div/div/section/div/form/div/div[{q}]/div[2]/div/div[1]').find_elements(By.TAG_NAME, 'p'):
+                    text += driver.find_element(By.XPATH, f'/html/body/div[3]/div/div/div/section/div/form/div/div['
+                                                          f'3]/div[2]/div/div[1]/p[{d}]').text
             except Exception as e:
                 text = s.text
+            text = text.replace('\n', '')
+            print(text)
             for i in SOLUTIONS.AYE.keys():
-                text = text.replace('\n', '')
                 if i in text:
                     print(text.replace('\n', ''))
                     calculated_tasks(q, SOLUTIONS.main(SOLUTIONS.AYE.get(i), text.replace('\n', '')))
                     break
-        else:
-            print('обман')
+        elif 'Сопоставьте объекты и характерные расстояния до них от Солнца' in s.text:
+            selectask(objectc_rast, q)
+        elif 'Мы смотрим на Солнечную систему с северного полюса Солнца.' in s.text:
+            selectask(objectc_napravl, q)
+        elif 'Соотнесите объекты Солнечной системы и их примерные размеры (диаметры)' in s.text:
+            selectask(objectc_razmer, q)
+        elif 'Расставьте спектральные классы звёзд по уменьшению температуры -- от горячих звёзд к холодным' in s.text:
+            draganddrop(spectr_c, q)
+        elif 'Сопоставьте спектральный класс и наблюдаемый цвет звезды' in s.text:
+            selectask(spectr_zv, q)
+        elif 'В левой колонке даны температуры поверхности звёзд. Сопоставьте им нужные спектральные классы.' in s.text:
+            selectask(temp_zv, q)
+        elif 'Расставьте звёзды в порядке увеличения их радиуса' in s.text:
+            draganddrop(rad_zv, q)
+        elif 'Сопоставьте тип галактики и её обозначение по классификации Хаббла' in s.text:
+            selectask(tip_gal, q)
+        elif clas == 'que gapselect adaptivenopenalty notyetanswered' or clas == 'que gapselect ' \
+                                                                                        'deferredfeedback ' \
+                                                                                        'notyetanswered' :
             gapselect(q)
+        elif '' in s.text:
+            multichoice(galaktiki, q)
     finish_test(lens)
 
 
@@ -227,5 +301,9 @@ def lsson_resh(url):
     solutions(driver.current_url)
 
 
-
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=167')
+lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=84')
+lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=155')
+lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=164')
+lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=170')
+lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=172')
+lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=185')

@@ -2,6 +2,8 @@ from math import *
 import re
 from random import randint
 import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 G = 6.67 * (10 ** (-11))
 Re = 6371
@@ -18,7 +20,7 @@ ANAL = re.compile(r'\d+[.,/]?\d*')
 
 
 def ErrorD(A1):
-    return A1 + A1 * ((randint(0, 20) - 10) / 1000)
+    return A1 + A1 * ((randint(0, 10) - 5) / 1000)
 
 
 def WII():
@@ -103,11 +105,15 @@ def Q13(A1, A2):
 
 # Годичный параллакс далёкой звезды равен
 def Q14(A1, A2, A3):
-    S = {" секнд": "* 0.001", "исекунд": ""}
+    driver = webdriver.Chrome('/home/jhon/PycharmProjects/Astro/chromedriver')
+    S = {" секнд": "* 0.001", "исекунд": "* 0.001"}
     print(A2)
-    return eval(str(A2) + S[A1])
-
-
+    driver.get('https://www.translatorscafe.com/unit-converter/ru-RU/calculator/parallax-distance/')
+    driver.find_element(By.XPATH,'/html/body/div[2]/table/tbody/tr/td[2]/div[2]/div[2]/input').send_keys(eval(str(A2) + S[A1]))
+    driver.find_element(By.XPATH,'/html/body/div[2]/table/tbody/tr/td[2]/div[2]/div[6]/input[1]').click()
+    answ = float(driver.find_element(By.XPATH, '/html/body/div[2]/table/tbody/tr/td[2]/div[2]/div[5]/b[1]').text.replace(',','.'))
+    driver.close()
+    return answ
 # Сколько звёзд
 def Q15(A1, A2, A3, A4):
     return A2 * StarConst ** (A1 - A3)
