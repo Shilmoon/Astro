@@ -1,9 +1,12 @@
+import random
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
-from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import time
 import json
 from data import zatmeniya
+from seleniumwire import webdriver
 import JestcoNavalilZadach as SOLUTIONS
 from selenium.webdriver.common.action_chains import ActionChains
 from data import galaktiki
@@ -52,27 +55,27 @@ tip_gal = {"неправильные": 'I', "спиральные с перем�
 rad_zv = ("красный карлик", "жёлтая звезда главной последовательности", "голубой гигант", "красный сверхгигант",
           "оранжевый гипергигант")
 spectr_c = ['O', "B", 'A', 'F', 'G', 'K', 'M']
-# proxy = input('Введите прокси')
-# port = input('Введите порт прокси')
-# proxy_login = input('Введите логин прокси')
-# proxy_password = input('Введите пароль прокси')
+qualified_test = {1: (84, 164), 2: (155, 170), 3: (172, 185)}
+trains = {1: (67, 68, 69, 83, 160, 157), 2: (85, 167, 169), 3: (179, 183, 181, 184, 188)}
 
-# options = {mabinon255@ulforex.com
-# mepapos680@rxcay.com
-# vacicir970@otodir.com
-# sageb90384@lurenwu.com
-# Bhbyjxrf14@
-#    'proxy': {
-#        'http': f'http://{proxy_login}:{proxy_password}@{proxy}:{port}',
-#        'https': f'https://{proxy_login}:{proxy_password}@{proxy}:{port}',
-#        'no_proxy': 'localhost,127.0.0.1'
-#    }
-# }
-# driver = webdriver.Chrome('/home/jhon/PycharmProjects/Astro/chromedriver',seleniumwire_options=options)
-driver = webdriver.Chrome('/home/jhon/PycharmProjects/Astro/chromedriver')
+chrome_options = Options()
+#chrome_options.add_argument('--headless')
+
+proxy = input('Введите прокси')
+
+options = {
+    'proxy': {
+        'http': f'http://{proxy}',
+        'https': f'https://{proxy}',
+        'no_proxy': 'localhost,127.0.0.1'
+    }
+}
+
+driver = webdriver.Chrome('/home/jhon/PycharmProjects/Astro/chromedriver', options=chrome_options,
+                          seleniumwire_options=options)
 driver.get('https://astroschools.ru/moodle/login/index.php')
-login = 'lefid45553@seinfaq.com'
-password = 'Bhbyjxrf14@'
+login = input('Введите логин')
+password = input('Введите пароль')
 driver.find_element(By.XPATH, '//*[@id="username"]').send_keys(login)
 driver.find_element(By.XPATH, '//*[@id="password"]').send_keys(password)
 driver.find_element(By.XPATH, '//*[@id="loginbtn"]').click()
@@ -88,11 +91,10 @@ def toggle_tasks():
 def autocompletion_tasks():
     driver.get('https://astroschools.ru/moodle/course/view.php?id=4')
     s = driver.find_elements(By.CLASS_NAME, 'activityinstance')
-    print(len(s))
     links = []
-    links.pop()
     for i in s:
         links.append((i.find_element(By.XPATH, ".//*").get_attribute('href')))
+    links.pop()
     for d in links:
         driver.get(d)
 
@@ -112,7 +114,6 @@ def photooick_tasks(dictation, i):
                                    f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[1]/p['
                                    f'3]/img').get_attribute(
         'src')
-    print(pht_name)
     pht_name = pht_name[pht_name.rfind('/') + 1:]
     for d in range(1, 9):
         s = driver.find_element(By.XPATH,
@@ -130,7 +131,9 @@ def multichoice(dictation, i):
                                    f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[1]/p/img').get_attribute(
         'src')
     pht_name = pht_name[pht_name.rfind('/') + 1:]
-    elem_len = len(driver.find_element(By.XPATH,f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div[2]').find_elements(By.TAG_NAME,'div'))
+    elem_len = len(driver.find_element(By.XPATH,
+                                       f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div[2]').find_elements(
+        By.TAG_NAME, 'div'))
     ass = 0
     for d in range(1, elem_len + 1):
         ass += 1
@@ -140,11 +143,6 @@ def multichoice(dictation, i):
             driver.find_element(By.XPATH,
                                 f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/div[2]/div[{d}]/input').click()
             break
-        else:
-            if ass == 4:
-                print(f'Вопрос номер {i}')
-                print(pht_name)
-                print(s)
 
 
 def draganddrop(lists, i):
@@ -161,7 +159,6 @@ def draganddrop(lists, i):
 
 def selectask(dictation, i):
     d = driver.find_element(By.XPATH, f'//*[@id="q{i}"]/div[2]/div/div[2]/table/tbody').find_elements(By.TAG_NAME, 'tr')
-    print((d))
     for s in range(1, len(d) + 1):
         f = s
         name = driver.find_element(By.XPATH,
@@ -169,7 +166,6 @@ def selectask(dictation, i):
 
         select_object = Select(driver.find_element(By.XPATH,
                                                    f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div[2]/table/tbody/tr[{f}]/td[2]/select'))
-        print(name)
         select_object.select_by_visible_text(dictation.get(name))
 
 
@@ -182,10 +178,9 @@ def gapselect(i):
         By.TAG_NAME,
         'span')
     first = 1
-    len_d = len(d)
     try:
         if driver.find_element(By.XPATH, f'/html/body/div[3]/div/div/div/section/div/form/div/div[{i}]/div[2]/div/div['
-                                     f'1]/p/span[{1}]/select').text == '':
+                                         f'1]/p/span[{1}]/select').text == '':
             first = 2
     except Exception:
         first = 2
@@ -250,13 +245,14 @@ def solutions(url):
                                                                                         'notyetanswered' or clas == 'que calculatedsimple deferredfeedback notyetanswered' or clas == 'que calculated deferredfeedback notanswered' or clas == 'que calculated deferredfeedback notyetanswered':
             try:
                 text = ""
-                for d in driver.find_element(By.XPATH, f'/html/body/div[3]/div/div/div/section/div/form/div/div[{q}]/div[2]/div/div[1]').find_elements(By.TAG_NAME, 'p'):
+                for d in driver.find_element(By.XPATH,
+                                             f'/html/body/div[3]/div/div/div/section/div/form/div/div[{q}]/div[2]/div/div[1]').find_elements(
+                    By.TAG_NAME, 'p'):
                     text += driver.find_element(By.XPATH, f'/html/body/div[3]/div/div/div/section/div/form/div/div['
                                                           f'3]/div[2]/div/div[1]/p[{d}]').text
             except Exception as e:
                 text = s.text
             text = text.replace('\n', '')
-            print(text)
             for i in SOLUTIONS.AYE.keys():
                 if i in text:
                     print(text.replace('\n', ''))
@@ -279,11 +275,12 @@ def solutions(url):
         elif 'Сопоставьте тип галактики и её обозначение по классификации Хаббла' in s.text:
             selectask(tip_gal, q)
         elif clas == 'que gapselect adaptivenopenalty notyetanswered' or clas == 'que gapselect ' \
-                                                                                        'deferredfeedback ' \
-                                                                                        'notyetanswered' :
+                                                                                 'deferredfeedback ' \
+                                                                                 'notyetanswered':
             gapselect(q)
         elif '' in s.text:
             multichoice(galaktiki, q)
+    time.sleep(random.randint(6, 9))
     finish_test(lens)
 
 
@@ -301,9 +298,30 @@ def lsson_resh(url):
     solutions(driver.current_url)
 
 
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=84')
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=155')
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=164')
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=170')
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=172')
-lsson_resh('https://astroschools.ru/moodle/mod/quiz/view.php?id=185')
+def course_reg():
+    driver.get('https://astroschools.ru/moodle/enrol/index.php?id=4')
+    try:
+        driver.find_element(By.XPATH,
+                            '/html/body/div[3]/div/div/div/section/div/div[2]/form/fieldset[2]/div/div/div/input').click()
+    except Exception as e:
+        print(e)
+        pass
+
+
+def tests(url_list):
+    for i in url_list:
+        lsson_resh(f'https://astroschools.ru/moodle/mod/quiz/view.php?id={str(i)}')
+        print(f'test {i} completed')
+
+
+def course_cheking(test_number):
+    course_reg()
+    print('Успешно зарегистрировано на курс')
+    print('Успешно отмечены задания с галочкой')
+    print('Успешно выполнены все задания с автовыполнением')
+    tests(trains.get(test_number))
+    tests(qualified_test.get(test_number))
+
+
+course_cheking(int(input('Номер тестов которые нужно пройти (1-3)')))
+himoxe2675@dineroa.com
